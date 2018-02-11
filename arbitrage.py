@@ -7,7 +7,7 @@ from threading import *
 
 def Watch_Buyucoin(junk):
 
-	response_buyucoin = requests.get("https://www.buyucoin.com/api")
+	response_buyucoin = requests.get("https://www.buyucoin.com/api")  ''' retrieving data from the api url '''
 
 	if response_buyucoin.status_code == 200:
 		#print("BuyUCoin Success")
@@ -17,9 +17,9 @@ def Watch_Buyucoin(junk):
 
 	count = 1
 
-	while (keep_going):
+	while (keep_going):		# for now i have limited the program to run 10 times
 
-		for link in soup_buyucoin.findAll('a', attrs={'href': re.compile("xrp/$")}):
+		for link in soup_buyucoin.findAll('a', attrs={'href': re.compile("xrp/$")}):  ''' obtaining specifically XRP data '''
 			data = requests.get(link.text)
 
 			json_string = data.content.decode('utf-8').replace("'", "\"")
@@ -47,6 +47,7 @@ def Watch_Buyucoin(junk):
 	# results = "Buyucoin final count: ".join(str(count-1))
 
 	return {'BuyUCoin_XRP_buy_price': buyucoin_xrp_buy_price, 'BuyUCoin_XRP_sell_price': buyucoin_xrp_sell_price}
+	''' the data collected from the buyucoin api '''
 
 
 def Watch_Koinex(junk):
@@ -59,7 +60,7 @@ def Watch_Koinex(junk):
 
 	while (keep_going):
 
-		response_koinex = requests.get("https://koinex.in/api/ticker")
+		response_koinex = requests.get("https://koinex.in/api/ticker")		''' retrieving data from the api url '''
 
 		if response_koinex.status_code == 200:
 			#print("Koinex Success")
@@ -94,7 +95,7 @@ def Watch_Koinex(junk):
 
 	# results = "Koinex final count: ".join(str(count-1))	
 
-	return koinex_xrp_price
+	return koinex_xrp_price  ''' data from the koinex api '''
 
 
 
@@ -109,7 +110,7 @@ def Watch_Coindelta(junk):
 
 	while (keep_going):
 
-		response_coindelta = requests.get("https://coindelta.com/api/v1/public/getticker/")
+		response_coindelta = requests.get("https://coindelta.com/api/v1/public/getticker/")  ''' retrieving data from the api url '''
 
 		if response_coindelta.status_code == 200:
 			#print("CoinDelta Success")
@@ -144,7 +145,7 @@ def Watch_Coindelta(junk):
 
 	# results = "Coindelta final count: ".join(str(count-1))
 
-	return coindelta_xrp_price
+	return coindelta_xrp_price		''' data collected from the coindelta api '''
 
 
 que = queue.Queue()
@@ -154,6 +155,8 @@ que = queue.Queue()
 thread_buyucoin = Thread(target=lambda q, arg1: q.put(Watch_Buyucoin(arg1)), args=(que, "junk"))
 thread_koinex = Thread(target=lambda q, arg1: q.put(Watch_Koinex(arg1)), args=(que, "junk"))
 thread_coindelta = Thread(target=lambda q, arg1: q.put(Watch_Coindelta(arg1)), args=(que, "junk"))
+
+''' Three different threads to parallely run the check on all 3 APIs '''
 
 # threads = [thread_buyucoin, thread_koinex, thread_coindelta]
 
@@ -173,15 +176,6 @@ while not que.empty():
 	result = que.get()
 
 	print(result)
-
-'''for i in range(len(threads)):
-	threads[i].join()
-
-print("".join(results))'''
-
-'''print(thread_buyucoin.join())
-print(thread_koinex.join())
-print(thread_coindelta.join()) '''
 
 
 
