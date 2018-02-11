@@ -2,6 +2,7 @@ import requests
 import json
 import re
 from bs4 import BeautifulSoup
+import Queue
 from threading import *
 
 def Watch_Buyucoin():
@@ -43,7 +44,7 @@ def Watch_Buyucoin():
 
 		#print("")
 
-	results = ["Buyucoin", ]	
+	results = "Buyucoin"
 
 	return results
 
@@ -91,7 +92,7 @@ def Watch_Koinex():
 
 		count+=1
 
-	results = ["Koinex", ]	
+	results = "Koinex"	
 
 	return results
 
@@ -141,24 +142,33 @@ def Watch_Coindelta():
 
 		count+=1
 
-	results = ["Coindelta", ]	
+	results = "Coindelta"
 
 	return results
 
 
+que = Queue.Queue()
 
 
-thread_buyucoin = Thread(target=Watch_Buyucoin)
-thread_koinex = Thread(target=Watch_Koinex)
-thread_coindelta = Thread(target=Watch_Coindelta)
+
+thread_buyucoin = Thread(target=Watch_Buyucoin, args=(que, ))
+thread_koinex = Thread(target=Watch_Koinex, args=(que, ))
+thread_coindelta = Thread(target=Watch_Coindelta, args=(que, ))
 
 threads = [thread_buyucoin, thread_koinex, thread_coindelta]
 
-results = [None]*10
 
 thread_buyucoin.start()
 thread_koinex.start()
 thread_coindelta.start()
+
+thread_buyucoin.join()
+thread_koinex.join()
+thread_coindelta.join()
+
+result = que.get()
+
+print(result)
 
 '''for i in range(len(threads)):
 	threads[i].join()
