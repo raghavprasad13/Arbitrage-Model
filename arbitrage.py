@@ -7,7 +7,8 @@ from threading import *
 
 def Watch_Buyucoin(junk):
 
-	response_buyucoin = requests.get("https://www.buyucoin.com/api")  ''' retrieving data from the api url '''
+	response_buyucoin = requests.get("https://www.buyucoin.com/api")  
+	''' retrieving data from the api url '''
 
 	if response_buyucoin.status_code == 200:
 		#print("BuyUCoin Success")
@@ -19,7 +20,8 @@ def Watch_Buyucoin(junk):
 
 	while (keep_going):		# for now i have limited the program to run 10 times
 
-		for link in soup_buyucoin.findAll('a', attrs={'href': re.compile("xrp/$")}):  ''' obtaining specifically XRP data '''
+		for link in soup_buyucoin.findAll('a', attrs={'href': re.compile("xrp/$")}):  
+			''' obtaining specifically XRP data '''
 			data = requests.get(link.text)
 
 			json_string = data.content.decode('utf-8').replace("'", "\"")
@@ -60,7 +62,8 @@ def Watch_Koinex(junk):
 
 	while (keep_going):
 
-		response_koinex = requests.get("https://koinex.in/api/ticker")		''' retrieving data from the api url '''
+		response_koinex = requests.get("https://koinex.in/api/ticker")		
+		''' retrieving data from the api url '''
 
 		if response_koinex.status_code == 200:
 			#print("Koinex Success")
@@ -95,7 +98,8 @@ def Watch_Koinex(junk):
 
 	# results = "Koinex final count: ".join(str(count-1))	
 
-	return koinex_xrp_price  ''' data from the koinex api '''
+	return koinex_xrp_price  
+	''' data from the koinex api '''
 
 
 
@@ -110,7 +114,8 @@ def Watch_Coindelta(junk):
 
 	while (keep_going):
 
-		response_coindelta = requests.get("https://coindelta.com/api/v1/public/getticker/")  ''' retrieving data from the api url '''
+		response_coindelta = requests.get("https://coindelta.com/api/v1/public/getticker/")  
+		''' retrieving data from the api url '''
 
 		if response_coindelta.status_code == 200:
 			#print("CoinDelta Success")
@@ -145,7 +150,8 @@ def Watch_Coindelta(junk):
 
 	# results = "Coindelta final count: ".join(str(count-1))
 
-	return coindelta_xrp_price		''' data collected from the coindelta api '''
+	return coindelta_xrp_price		
+	''' data collected from the coindelta api '''
 
 
 que = queue.Queue()
