@@ -2,10 +2,10 @@ import requests
 import json
 import re
 from bs4 import BeautifulSoup
-import Queue
+import queue
 from threading import *
 
-def Watch_Buyucoin():
+def Watch_Buyucoin(junk):
 
 	response_buyucoin = requests.get("https://www.buyucoin.com/api")
 
@@ -44,12 +44,12 @@ def Watch_Buyucoin():
 
 		#print("")
 
-	results = "Buyucoin"
+	# results = "Buyucoin final count: ".join(str(count-1))
 
-	return results
+	return {'BuyUCoin_XRP_buy_price': buyucoin_xrp_buy_price, 'BuyUCoin_XRP_sell_price': buyucoin_xrp_sell_price}
 
 
-def Watch_Koinex():
+def Watch_Koinex(junk):
 
 	# KOINEX_BREAKEVEN_POINT =
 
@@ -92,14 +92,14 @@ def Watch_Koinex():
 
 		count+=1
 
-	results = "Koinex"	
+	# results = "Koinex final count: ".join(str(count-1))	
 
-	return results
-
-
+	return koinex_xrp_price
 
 
-def Watch_Coindelta():
+
+
+def Watch_Coindelta(junk):
 
 	# COINDELTA_BREAKEVEN_POINT = 
 
@@ -142,20 +142,20 @@ def Watch_Coindelta():
 
 		count+=1
 
-	results = "Coindelta"
+	# results = "Coindelta final count: ".join(str(count-1))
 
-	return results
-
-
-que = Queue.Queue()
+	return coindelta_xrp_price
 
 
+que = queue.Queue()
 
-thread_buyucoin = Thread(target=Watch_Buyucoin, args=(que, ))
-thread_koinex = Thread(target=Watch_Koinex, args=(que, ))
-thread_coindelta = Thread(target=Watch_Coindelta, args=(que, ))
 
-threads = [thread_buyucoin, thread_koinex, thread_coindelta]
+
+thread_buyucoin = Thread(target=lambda q, arg1: q.put(Watch_Buyucoin(arg1)), args=(que, "junk"))
+thread_koinex = Thread(target=lambda q, arg1: q.put(Watch_Koinex(arg1)), args=(que, "junk"))
+thread_coindelta = Thread(target=lambda q, arg1: q.put(Watch_Coindelta(arg1)), args=(que, "junk"))
+
+# threads = [thread_buyucoin, thread_koinex, thread_coindelta]
 
 
 thread_buyucoin.start()
@@ -166,9 +166,13 @@ thread_buyucoin.join()
 thread_koinex.join()
 thread_coindelta.join()
 
-result = que.get()
+# print(que.qsize())
 
-print(result)
+while not que.empty():
+
+	result = que.get()
+
+	print(result)
 
 '''for i in range(len(threads)):
 	threads[i].join()
